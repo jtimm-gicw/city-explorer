@@ -1,10 +1,12 @@
-/* eslint-disable react/prop-types */
+import React from 'react';
 import Image from 'react-bootstrap/Image';
 
-function Map(props) {
-  return (
-    <Image src={props.img_url} alt={props.city} title={props.city} rounded fluid />
-  );
+class Map extends React.Component {
+  render() {
+    return(
+      <Image src={this.props.img_url} alt={this.props.city} title={this.props.city} rounded fluid />
+    );
+  }
 }
 
 export default Map;
