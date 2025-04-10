@@ -24,7 +24,7 @@ width: 100%
 
 body {
   padding: 20px;
-  background-color: rgb(243, 223, 198);
+  background-color: rgb(198, 243, 233);
   margin: auto;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
@@ -56,14 +56,17 @@ nav h1 {
   font-weight: bold;
 }
 
+.btn, btn-primary {
+  margin-top: 10px;
+}
 /* Map container */
 #map {
   text-align: center;
   width: 100%;
   max-width: 900px;
   margin: 0 auto 40px auto;
-  border: 4px solid #b48b6f;
-  border-radius: 12px;
+  border: 8px solid #7bb46f;
+  border-radius: 50px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
@@ -83,4 +86,5 @@ nav h1 {
 .card:hover {
   transform: scale(1.02);
   transition: transform 0.2s ease;
+  background-color: #95d6f6;
 }
