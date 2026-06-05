@@ -12,7 +12,8 @@ class Weather extends React.Component {
           {this.props.weather.map((day, idx) => (
             <WeatherDay
               key={idx}
-              day={day}
+              day={day.date}
+              description={day.description}
             />
           ))
           }
