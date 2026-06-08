@@ -3,20 +3,21 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container } from 'react-bootstrap';
 import WeatherDay from './WeatherDay';
 
+
 class Weather extends React.Component {
   render() {
+    console.log('WEATHER PROPS:', this.props.weather);
+
     return(
       <div id="weather">
-        <Container style={{ width: '18rem' }}>
-          <h3>Weather:</h3>
-          {this.props.weather.map((day, idx) => (
-            <WeatherDay
-              key={idx}
-              day={day.date}
-              description={day.description}
-            />
-          ))
-          }
+        <h2>5-Day Forecast</h2>
+        <Container>
+          <h3>Weather</h3>
+            <div className="weather-container">
+              {this.props.weather.map((day, index) => (
+            <WeatherDay key={index} day={day} />
+              ))}
+            </div>
         </Container>
       </div>
     );

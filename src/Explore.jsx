@@ -1,15 +1,12 @@
 import React from 'react';
 import axios from 'axios';
-import {
-  Container,
-  Row,
-  Col,
-} from 'react-bootstrap';
+import { Container,Row, Col,} from 'react-bootstrap';
 
 import CitySearch from './CitySearch';
 import LatLon from './LatLon';
 import Map from './Map';
 import Weather from './Weather';
+import Movies from './Movies'; // Lab 8: Import Movies component
 
 
 const storage = {};
@@ -26,20 +23,14 @@ class Explore extends React.Component {
     this.state = {
 
       displayError: false,
-
       displayMap: false,
-
       errorMessage: '',
-
       latitude: '',
-
       location: '',
-
       longitude: '',
-
       searchQuery: '',
-
       weather: [],
+      movies: []  // Lab 8: ADD movies state to constructor state
 
     };
 
@@ -48,9 +39,7 @@ class Explore extends React.Component {
   updateCity = (e) => {
 
     this.setState({
-
       searchQuery: e.target.value
-
     });
 
   };
@@ -58,11 +47,10 @@ class Explore extends React.Component {
   submitLocation = async () => {
 
     if(storage[this.state.searchQuery] === undefined){
-
       console.log('getting location from API');
 
-      const url =
-        `https://us1.locationiq.com/v1/search.php?key=${API_KEY}&q=${this.state.searchQuery}&format=json`;
+            const url = `https://nominatim.openstreetmap.org/search?q=${this.state.searchQuery}&format=json`;
+      // WEATHER URL- API fix , no longer need to use API
 
       console.log('SEARCH QUERY:', this.state.searchQuery);
       console.log('API KEY:', API_KEY);
@@ -71,39 +59,40 @@ class Explore extends React.Component {
       let location;
 
       try {
-
-        location = await axios.get(url);
+        location = await axios.get(url, {
+          headers: {
+            'Accept': 'application/json',
+            
+                  }
+        }); // API fix(not for students) it tells the API what format you want back. NOTE: Nominatim sometimes blocks or limits requests without headers
 
         console.log('successfully got location', { location });
 
         this.setState({
-
           location: location.data[0].display_name,
-
           latitude: location.data[0].lat,
-
           longitude: location.data[0].lon,
-
           displayMap: true,
-
           displayError: false
 
         }, () => {
-
-          this.getWeather();
-
+        this.getWeather();
+        this.getMovies(this.state.searchQuery);//lab 8: Call getMovies here as well, so that when a user searches for a city, they will see both the weather and movies for that city.
+        /* 
+        By passing it explicitly you guarantee:
+          - Movies always match the search
+          - No stale state issues
+          - Easier debugging later
+        */
         });
 
         storage[this.state.searchQuery] = location.data[0];
 
       } catch(error) {
-
         console.log('FULL ERROR:', error);
 
         if(error.response){
-
           console.log('STATUS:', error.response.status);
-
           console.log('DATA:', error.response.data);
 
         }
@@ -111,14 +100,11 @@ class Explore extends React.Component {
         this.setState({
 
           displayMap: false,
-
           displayError: true,
-
           errorMessage:
             error.response
               ? `Error ${error.response.status}: Something went wrong`
               : 'Network Error'
-
         });
 
       }
@@ -136,10 +122,11 @@ class Explore extends React.Component {
 
       }, () => {
         this.getWeather();
+        //Lab 8: Call getMovies here as well, so that when a user searches for a city, they will see both the weather and movies for that city.
+        this.getMovies(this.state.searchQuery);
+        // or this.getMovies(storage[this.state.searchQuery].display_name || this.state.searchQuery);
       });
-
     }
-
   };
 
   getWeather = async () => {
@@ -155,8 +142,9 @@ class Explore extends React.Component {
       );
 
       this.setState({
-        weather: weather.data
+        weather: weather.data,
       });
+     
 
     } catch(error){
       console.log('weather error', error);
@@ -171,6 +159,19 @@ class Explore extends React.Component {
       });
     }
 
+  };
+// Lab 8: Create a getMovies method that makes a request to the server for movies based on the search query. Store the results in state.
+  getMovies = async (query) => {
+    try {
+      const movies = await axios.get(`${SERVER_URL}/movies`, {
+        params: { searchQuery: query }
+     });
+
+      this.setState({ movies: movies.data });
+
+    } catch (error) {
+    console.log('movie error', error);
+    }
   };
 
   render() {
@@ -216,6 +217,14 @@ class Explore extends React.Component {
               <Col>
                 <Weather
                   weather={this.state.weather}
+                />
+              </Col>
+            </Row>
+            {/* Lab 8: ADD MOVIES SECTION */}
+            <Row className="movies-section">
+              <Col>
+                <Movies
+                  movies={this.state.movies} // Lab 8: Pass movies state as a prop to Movies component
                 />
               </Col>
             </Row>
